@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top 10 Palpites • Palpites IA</title>
+
+<style>
+    body {
+        background: #000;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        color: white;
+        position: relative;
+        min-height: 100vh;
+    }
+    
+    /* ---------------- MOLDURA NEON AO REDOR DA PÁGINA ---------------- */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        border: 2px solid rgba(0, 255, 136, 0.15);
+        border-radius: 30px;
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.2),
+                    inset 0 0 30px rgba(0, 255, 136, 0.1);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    /* ---------------- HEADER ---------------- */
+    header {
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(10,10,10,0.95);
+        position: relative;
+        z-index: 2;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .bola-neon-mini {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: 3px solid rgba(0,255,136,0.3);
+        border-top-color: #00ff88;
+        animation: spin 2s linear infinite;
+        box-shadow: 0 0 15px #00ff88, 0 0 25px #ffcc00;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .logo h1 {
+        font-size: 28px;
+        font-weight: bold;
+        background: linear-gradient(#00ff88, #00d471);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px #00ff88;
+        letter-spacing: 1.5px;
+        margin: 0;
+    }
+
+    .btn-voltar {
+        background: transparent;
+        padding: 10px 20px;
+        border: 2px solid #00ff88;
+        border-radius: 10px;
+        cursor: pointer;
+        color: #00ff88;
+        font-weight: bold;
+        transition: .3s ease;
+    }
+
+    .btn-voltar:hover {
+        background: #00ff88;
+        color: black;
+    }
+
+    /* ---------------- HERO SECTION ---------------- */
+    .hero {
+        text-align: center;
+        padding: 40px 20px 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .titulo-top10 {
+        font-size: 36px;
+        margin-bottom: 15px;
+        text-shadow: 0 0 20px #00ff88;
+        position: relative;
+        display: inline-block;
+    }
+
+    .titulo-top10::before {
+        content: '⚡';
+        margin-right: 10px;
+    }
+
+    .subinfo {
+        color: #bbb;
+        font-size: 18px;
+        max-width: 600px;
+        margin: 0 auto 30px;
+        line-height: 1.5;
+    }
+
+    .data-atual {
+        color: #ffcc00;
+        font-weight: bold;
+        margin-top: 10px;
+        font-size: 16px;
+    }
+
+    /* ---------------- GRID DE APOSTAS ---------------- */
+    .apostas-grid {
+        width: 95%;
+        max-width: 1200px;
+        margin: 0 auto 50px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 25px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .aposta-card {
+        background: rgba(30,30,30,0.9);
+        border: 2px solid rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 25px;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .aposta-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #00ff88, #ffcc00);
+    }
+
+    .aposta-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 25px rgba(0,255,136,0.3);
+        border-color: #00ff88;
+    }
+
+    .aposta-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+
+    .aposta-titulo {
+        font-size: 22px;
+        margin-bottom: 8px;
+        text-shadow: 0 0 8px #00ff88;
+        flex: 1;
+    }
+
+    .aposta-confianca {
+        background: rgba(255, 204, 0, 0.2);
+        color: #ffcc00;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        margin-left: 15px;
+        white-space: nowrap;
+    }
+
+    .aposta-meta {
+        color: #ccc;
+        margin-bottom: 15px;
+        font-size: 15px;
+        line-height: 1.4;
+    }
+
+    .aposta-detalhes {
+        background: rgba(255,255,255,0.05);
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .detalhe-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .detalhe-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .detalhe-label {
+        color: #bbb;
+    }
+
+    .detalhe-valor {
+        color: #00ff88;
+        font-weight: bold;
+    }
+
+    .probabilidade {
+        font-size: 16px;
+        font-weight: bold;
+        color: #ffcc00;
+        text-shadow: 0 0 10px #ffcc00;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .tag {
+        padding: 8px 16px;
+        background: #00ff88;
+        color: black;
+        border-radius: 10px;
+        display: inline-block;
+        font-weight: bold;
+        box-shadow: 0 0 10px #00ff88;
+    }
+
+    .aposta-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .horario {
+        color: #bbb;
+        font-size: 14px;
+    }
+
+    /* ---------------- ESTATÍSTICAS DETALHADAS ---------------- */
+    .estatisticas {
+        margin: 20px 0;
+        background: rgba(255,255,255,0.03);
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .estatisticas-titulo {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 12px;
+        color: #ffcc00;
+        text-align: center;
+    }
+
+    .estatisticas-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .time-estatisticas {
+        background: rgba(255,255,255,0.05);
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    .time-nome {
+        font-weight: bold;
+        margin-bottom: 8px;
+        text-align: center;
+        font-size: 14px;
+        color: #00ff88;
+    }
+
+    .estatistica-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+        font-size: 13px;
+    }
+
+    .estatistica-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .estatistica-label {
+        color: #bbb;
+    }
+
+    .estatistica-valor {
+        color: white;
+        font-weight: bold;
+    }
+
+    /* ---------------- OBSERVAÇÃO DA IA ---------------- */
+    .observacao-ia {
+        background: rgba(0, 255, 136, 0.1);
+        border-left: 3px solid #00ff88;
+        padding: 12px 15px;
+        margin: 15px 0;
+        border-radius: 0 8px 8px 0;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .observacao-titulo {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #00ff88;
+    }
+
+    /* ---------------- BOTÃO DE APOSTA ---------------- */
+    .btn-aposta-grande {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #00ff88, #00d471);
+        color: black;
+        border: none;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+        text-align: center;
+        margin-top: 20px;
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+    }
+
+    .btn-aposta-grande:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.7);
+    }
+
+    /* ---------------- STATUS DO USUÁRIO ---------------- */
+    .user-status {
+        text-align: center;
+        margin-bottom: 30px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .plano-info {
+        display: inline-block;
+        background: rgba(0, 255, 136, 0.1);
+        padding: 8px 20px;
+        border-radius: 20px;
+        color: #00ff88;
+        font-size: 14px;
+        border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    /* ---------------- BOTÃO TOPO ---------------- */
+    .btn-topo {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #00ff88;
+        color: black;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ff88;
+        z-index: 100;
+        transition: 0.3s;
+        display: none;
+    }
+
+    .btn-topo:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 20px #00ff88;
+    }
+
+    /* ---------------- RESPONSIVO ---------------- */
+    @media (max-width: 768px) {
+        .apostas-grid {
+            grid-template-columns: 1fr;
+        }
+        .estatisticas-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .titulo-top10 { font-size: 28px; }
+        .aposta-header { flex-direction: column; }
+        .aposta-confianca { margin-left: 0; margin-top: 10px; }
+        .btn-topo { bottom: 20px; right: 20px; }
+    }
+</style>
+</head>
+<body>
+
+<!-- =============== HEADER =============== -->
+<header>
+    <div class="logo">
+        <div class="bola-neon-mini"></div>
+        <h1>PALPITES IA</h1>
+    </div>
+    <button class="btn-voltar" onclick="window.location.href='painel.html'">
+        ⬅ Voltar ao Painel
+    </button>
+</header>
+
+<!-- =============== HERO SECTION =============== -->
+<div class="hero">
+    <h2 class="titulo-top10">Top 10 Palpites do Dia</h2>
+    <p class="subinfo">Palpites detalhados com análises estatísticas completas e observações da IA.</p>
+    <div class="data-atual" id="dataAtual"></div>
+</div>
+
+<!-- =============== STATUS DO USUÁRIO =============== -->
+<div class="user-status">
+    <div class="plano-info" id="planoInfo">Plano Ativo: Premium</div>
+</div>
+
+<!-- =============== GRID DOS TOP 10 PALPITES =============== -->
+<div class="apostas-grid" id="top10Palpites">
+    
+    <!-- PALPITE 1 -->
+    <div class="aposta-card">
+        <div class="aposta-header">
+            <div class="aposta-titulo">Manchester City x Brighton</div>
+            <div class="aposta-confianca">ALTA CONFIANÇA</div>
+        </div>
+        <div class="aposta-meta">Premier League • Inglaterra • Hoje - 17:00</div>
+        
+        <div class="aposta-detalhes">
+            <div class="detalhe-item">
+                <span class="detalhe-label">Mercado:</span>
+                <span class="detalhe-valor">Mais de 2.5 gols</span>
+            </div>
+            <div class="detalhe-item">
+                <span class="detalhe-label">Odd:</span>
+                <span class="detalhe-valor">1.85</span>
+            </div>
+        </div>
+        
+        <div class="probabilidade">Probabilidade IA: 84%</div>
+        <span class="tag">⚽ Alta chance de gols</span>
+        
+        <div class="estatisticas">
+            <div class="estatisticas-titulo">Estatísticas dos Times</div>
+            <div class="estatisticas-grid">
+                <div class="time-estatisticas">
+                    <div class="time-nome">Manchester City</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols marcados:</span>
+                        <span class="estatistica-valor">2.8</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols sofridos:</span>
+                        <span class="estatistica-valor">0.9</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Escanteios por jogo:</span>
+                        <span class="estatistica-valor">7.2</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Finalizações por jogo:</span>
+                        <span class="estatistica-valor">16.5</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">4V-1E-0D</span>
+                    </div>
+                </div>
+                <div class="time-estatisticas">
+                    <div class="time-nome">Brighton</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols marcados:</span>
+                        <span class="estatistica-valor">1.9</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols sofridos:</span>
+                        <span class="estatistica-valor">1.6</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Escanteios por jogo:</span>
+                        <span class="estatistica-valor">5.8</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Finalizações por jogo:</span>
+                        <span class="estatistica-valor">12.3</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">2V-2E-1D</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observacao-ia">
+            <div class="observacao-titulo">Observação da IA:</div>
+            A IA identificou forte padrão ofensivo, com média alta de gols e volume elevado de finalizações nos últimos jogos de ambas as equipes.
+        </div>
+        
+        <button class="btn-aposta-grande">Quero essa aposta</button>
+        
+        <div class="aposta-footer">
+            <div class="horario">Atualizado há 45min</div>
+        </div>
+    </div>
+
+    <!-- PALPITE 2 -->
+    <div class="aposta-card">
+        <div class="aposta-header">
+            <div class="aposta-titulo">Inter de Milão x Roma</div>
+            <div class="aposta-confianca">CONFIANÇA MÉDIA</div>
+        </div>
+        <div class="aposta-meta">Serie A • Itália • Hoje - 16:30</div>
+        
+        <div class="aposta-detalhes">
+            <div class="detalhe-item">
+                <span class="detalhe-label">Mercado:</span>
+                <span class="detalhe-valor">Ambas as equipes marcam</span>
+            </div>
+            <div class="detalhe-item">
+                <span class="detalhe-label">Odd:</span>
+                <span class="detalhe-valor">1.90</span>
+            </div>
+        </div>
+        
+        <div class="probabilidade">Probabilidade IA: 79%</div>
+        <span class="tag">✅ Ambas marcam + Ataques fortes</span>
+        
+        <div class="estatisticas">
+            <div class="estatisticas-titulo">Estatísticas dos Times</div>
+            <div class="estatisticas-grid">
+                <div class="time-estatisticas">
+                    <div class="time-nome">Inter de Milão</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols marcados:</span>
+                        <span class="estatistica-valor">2.3</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols sofridos:</span>
+                        <span class="estatistica-valor">0.7</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Escanteios por jogo:</span>
+                        <span class="estatistica-valor">6.5</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Finalizações por jogo:</span>
+                        <span class="estatistica-valor">14.8</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">4V-1E-0D</span>
+                    </div>
+                </div>
+                <div class="time-estatisticas">
+                    <div class="time-nome">Roma</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols marcados:</span>
+                        <span class="estatistica-valor">1.8</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols sofridos:</span>
+                        <span class="estatistica-valor">1.2</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Escanteios por jogo:</span>
+                        <span class="estatistica-valor">5.2</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Finalizações por jogo:</span>
+                        <span class="estatistica-valor">11.5</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">3V-1E-1D</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observacao-ia">
+            <div class="observacao-titulo">Observação da IA:</div>
+            Ambas as equipes apresentam ataques eficientes e defesas que têm sofrido gols em jogos recentes, indicando alta probabilidade de ambas marcarem.
+        </div>
+        
+        <button class="btn-aposta-grande">Quero essa aposta</button>
+        
+        <div class="aposta-footer">
+            <div class="horario">Atualizado há 50min</div>
+        </div>
+    </div>
+
+    <!-- PALPITE 3 -->
+    <div class="aposta-card">
+        <div class="aposta-header">
+            <div class="aposta-titulo">Bayern Munique x Stuttgart</div>
+            <div class="aposta-confianca">ALTA CONFIANÇA</div>
+        </div>
+        <div class="aposta-meta">Bundesliga • Alemanha • Hoje - 15:30</div>
+        
+        <div class="aposta-detalhes">
+            <div class="detalhe-item">
+                <span class="detalhe-label">Mercado:</span>
+                <span class="detalhe-valor">Vitória com Handicap -1.5</span>
+            </div>
+            <div class="detalhe-item">
+                <span class="detalhe-label">Odd:</span>
+                <span class="detalhe-valor">1.75</span>
+            </div>
+        </div>
+        
+        <div class="probabilidade">Probabilidade IA: 81%</div>
+        <span class="tag">🔥 Superioridade ofensiva</span>
+        
+        <div class="estatisticas">
+            <div class="estatisticas-titulo">Estatísticas dos Times</div>
+            <div class="estatisticas-grid">
+                <div class="time-estatisticas">
+                    <div class="time-nome">Bayern Munique</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols marcados:</span>
+                        <span class="estatistica-valor">2.9</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols sofridos:</span>
+                        <span class="estatistica-valor">0.8</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Escanteios por jogo:</span>
+                        <span class="estatistica-valor">7.8</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Finalizações por jogo:</span>
+                        <span class="estatistica-valor">17.2</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">5V-0E-0D</span>
+                    </div>
+                </div>
+                <div class="time-estatisticas">
+                    <div class="time-nome">Stuttgart</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols marcados:</span>
+                        <span class="estatistica-valor">1.7</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols sofridos:</span>
+                        <span class="estatistica-valor">1.5</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Escanteios por jogo:</span>
+                        <span class="estatistica-valor">4.9</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Finalizações por jogo:</span>
+                        <span class="estatistica-valor">10.8</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">2V-1E-2D</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observacao-ia">
+            <div class="observacao-titulo">Observação da IA:</div>
+            O Bayern apresenta domínio absoluto em casa, com média ofensiva superior e defesa sólida. O Stuttgart tem dificuldades defensivas contra times de alto escalão.
+        </div>
+        
+        <button class="btn-aposta-grande">Quero essa aposta</button>
+        
+        <div class="aposta-footer">
+            <div class="horario">Atualizado há 1h</div>
+        </div>
+    </div>
+
+    <!-- Adicione mais 7 palpites seguindo o mesmo padrão -->
+
+</div>
+
+<!-- BOTÃO VOLTAR AO TOPO -->
+<button class="btn-topo" id="btnTopo" title="Voltar ao topo">↑</button>
+
+<script>
+    // Atualizar data atual
+    const dataAtual = new Date();
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    document.getElementById('dataAtual').textContent = dataAtual.toLocaleDateString('pt-BR', options);
+    
+    // Simular verificação do plano do usuário
+    function verificarPlanoUsuario() {
+        // Aqui você integraria com o backend para verificar o plano real
+        const plano = localStorage.getItem('planoUsuario') || 'Premium';
+        document.getElementById('planoInfo').textContent = `Plano Ativo: ${plano}`;
+    }
+    
+    // Verificar plano ao carregar a página
+    verificarPlanoUsuario();
+    
+    // Botão voltar ao topo
+    const btnTopo = document.getElementById("btnTopo");
+    
+    window.onscroll = function() {
+        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+            btnTopo.style.display = "block";
+        } else {
+            btnTopo.style.display = "none";
+        }
+    };
+    
+    btnTopo.onclick = function() {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+    // Adicionar funcionalidade aos botões de aposta
+    document.querySelectorAll('.btn-aposta-grande').forEach(button => {
+        button.addEventListener('click', function() {
+            // Aqui você pode adicionar a lógica para redirecionar para as casas de apostas
+            // ou mostrar um modal com as opções
+            alert('Redirecionando para as casas de apostas...');
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login • Palpites IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #000;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Moldura verde como nas outras páginas */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 2px solid rgba(0, 255, 136, 0.15);
+            border-radius: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2),
+                        inset 0 0 30px rgba(0, 255, 136, 0.1);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            gap: 30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .side-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .side-panel.left {
+            align-items: flex-end;
+            text-align: right;
+            padding-right: 20px;
+        }
+
+        .side-panel.right {
+            align-items: flex-start;
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(#00ff88, #00d471);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px #00ff88;
+        }
+
+        .panel-title {
+            color: #00ff88;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .features {
+            margin-bottom: 30px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .left .feature {
+            justify-content: flex-end;
+        }
+
+        .right .feature {
+            justify-content: flex-start;
+        }
+
+        .feature-icon {
+            color: #00ff88;
+            margin: 0 10px;
+            font-size: 16px;
+        }
+
+        .testimonial {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .testimonial-author {
+            font-size: 13px;
+            color: #00ff88;
+            font-weight: 500;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .form-section {
+            width: 400px;
+            flex-shrink: 0;
+        }
+
+        .card {
+            background: rgba(30,30,30,0.95);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card-header h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+            color: #00ff88;
+        }
+
+        .card-header p {
+            color: #bbb;
+            font-size: 13px;
+        }
+
+        .trial-badge {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .trial-badge strong {
+            color: #00ff88;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #00ff88, #00d471);
+            color: black;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #bbb;
+        }
+
+        .login-link a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .error-message {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 15px;
+            color: #ff6b81;
+            font-size: 13px;
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 15px;
+            color: #00ff88;
+            font-size: 13px;
+            display: none;
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: #bbb;
+        }
+
+        .remember-me input {
+            margin-right: 6px;
+        }
+
+        .forgot-password {
+            font-size: 13px;
+            color: #00ff88;
+            text-decoration: none;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .side-panel {
+                width: 100%;
+                max-width: 600px;
+                align-items: center !important;
+                text-align: center !important;
+                padding: 0 !important;
+            }
+            
+            .side-panel.left, .side-panel.right {
+                order: 2;
+            }
+            
+            .form-section {
+                order: 1;
+            }
+            
+            .feature {
+                justify-content: center !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-section {
+                width: 100%;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .form-footer {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Painel Esquerdo -->
+        <div class="side-panel left">
+            <div class="logo">
+                <h1>PALPITES IA</h1>
+            </div>
+            
+            <div class="panel-title">🎯 Por que escolher nossa IA?</div>
+            
+            <div class="features">
+                <div class="feature">
+                    <span>Análise de dados em tempo real</span>
+                    <span class="feature-icon">⚡</span>
+                </div>
+                <div class="feature">
+                    <span>Algoritmos de machine learning</span>
+                    <span class="feature-icon">🧠</span>
+                </div>
+                <div class="feature">
+                    <span>Histórico de 85% de acertos</span>
+                    <span class="feature-icon">📈</span>
+                </div>
+                <div class="feature">
+                    <span>Atualizações constantes</span>
+                    <span class="feature-icon">🔄</span>
+                </div>
+            </div>
+            
+            <div class="panel-title">💬 O que dizem nossos usuários</div>
+            
+            <div class="testimonial">
+                <div class="testimonial-text">
+                    "Com a IA, minha taxa de acerto aumentou 40%. Os palpites são muito precisos!"
+                </div>
+                <div class="testimonial-author">- Carlos Silva, Apostador</div>
+            </div>
+            
+            <div class="testimonial">
+                <div class="testimonial-text">
+                    "Finalmente uma ferramenta que entrega resultados. O trial de 30 dias foi decisivo."
+                </div>
+                <div class="testimonial-author">- Ana Rodrigues, Investidora</div>
+            </div>
+        </div>
+        
+        <!-- Formulário Central -->
+        <div class="form-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Acessar Conta</h2>
+                    <p>Entre com suas credenciais</p>
+                </div>
+                
+                <div class="trial-badge">
+                    <strong>🎁 30 DIAS GRÁTIS</strong> - Acesso completo
+                </div>
+                
+                <form id="loginForm">
+                    <div class="error-message" id="errorMessage"></div>
+                    <div class="success-message" id="successMessage"></div>
+                    
+                    <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" id="email" class="form-control" placeholder="seu@email.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" class="form-control" placeholder="Sua senha" required>
+                    </div>
+                    
+                    <div class="form-footer">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Lembrar-me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Esqueci a senha</a>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="loginBtn">Entrar</button>
+                </form>
+                
+                <div class="login-link">
+                    Não tem conta? <a href="cadastro.html">Criar Conta</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Painel Direito -->
+        <div class="side-panel right">
+            <div class="panel-title">🚀 Vantagens Exclusivas</div>
+            
+            <div class="features">
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span>Top 3 palpites do dia</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span>Análises detalhadas com estatísticas</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span>Apostas múltiplas selecionadas</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span>Palpites de alta segurança</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span>Suporte especializado</span>
+                </div>
+            </div>
+            
+            <div class="panel-title">📊 Nossos Números</div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value">85%</div>
+                    <div class="stat-label">Taxa de Acerto</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">2.5K+</div>
+                    <div class="stat-label">Usuários Ativos</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">15K+</div>
+                    <div class="stat-label">Palpites Gerados</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">94%</div>
+                    <div class="stat-label">Satisfação</div>
+                </div>
+            </div>
+            
+            <div class="panel-title" style="margin-top: 30px;">⏰ Oferta por Tempo Limitado</div>
+            
+            <div class="trial-badge" style="text-align: left; margin-top: 10px;">
+                <strong>Últimos dias</strong> para garantir 30 dias gratuitos com acesso completo a todos os recursos premium!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos DOM
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        
+        // Validação de formulário
+        function validateForm() {
+            const emailValid = emailInput.value.includes('@');
+            const passwordValid = passwordInput.value.length >= 6;
+            
+            loginBtn.disabled = !(emailValid && passwordValid);
+        }
+        
+        // Ouvintes de entrada
+        [emailInput, passwordInput].forEach(input => {
+            input.addEventListener('input', validateForm);
+        });
+        
+        // Mensagens
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+        
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+        
+        // Submissão do formulário
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simulação de login
+            // Em um sistema real, aqui seria feita uma requisição para o servidor
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            
+            // Validação simples para demonstração
+            if (email === 'demo@email.com' && password === '123456') {
+                showSuccess('Login realizado com sucesso! Redirecionando...');
+                setTimeout(() => {
+                    window.location.href = 'painel.html';
+                }, 1500);
+            } else {
+                showError('E-mail ou senha incorretos. Tente novamente.');
+            }
+        });
+        
+        // Inicialização
+        validateForm();
+    </script>
+</body>
+</html>

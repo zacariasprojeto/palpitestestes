@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apostas Múltiplas • Palpites IA</title>
+
+<style>
+    body {
+        background: #000;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        color: white;
+        position: relative;
+        min-height: 100vh;
+    }
+    
+    /* ---------------- MOLDURA NEON AO REDOR DA PÁGINA ---------------- */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        border: 2px solid rgba(0, 255, 136, 0.15);
+        border-radius: 30px;
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.2),
+                    inset 0 0 30px rgba(0, 255, 136, 0.1);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    /* ---------------- HEADER ---------------- */
+    header {
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(10,10,10,0.95);
+        position: relative;
+        z-index: 2;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .bola-neon-mini {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: 3px solid rgba(0,255,136,0.3);
+        border-top-color: #00ff88;
+        animation: spin 2s linear infinite;
+        box-shadow: 0 0 15px #00ff88, 0 0 25px #ffcc00;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .logo h1 {
+        font-size: 28px;
+        font-weight: bold;
+        background: linear-gradient(#00ff88, #00d471);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px #00ff88;
+        letter-spacing: 1.5px;
+        margin: 0;
+    }
+
+    .btn-voltar {
+        background: transparent;
+        padding: 10px 20px;
+        border: 2px solid #00ff88;
+        border-radius: 10px;
+        cursor: pointer;
+        color: #00ff88;
+        font-weight: bold;
+        transition: .3s ease;
+    }
+
+    .btn-voltar:hover {
+        background: #00ff88;
+        color: black;
+    }
+
+    /* ---------------- HERO SECTION ---------------- */
+    .hero {
+        text-align: center;
+        padding: 40px 20px 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .titulo-multiplas {
+        font-size: 36px;
+        margin-bottom: 15px;
+        text-shadow: 0 0 20px #00ff88;
+        position: relative;
+        display: inline-block;
+    }
+
+    .titulo-multiplas::before {
+        content: '🎯';
+        margin-right: 10px;
+    }
+
+    .subinfo {
+        color: #bbb;
+        font-size: 18px;
+        max-width: 600px;
+        margin: 0 auto 30px;
+        line-height: 1.5;
+    }
+
+    .data-atual {
+        color: #ffcc00;
+        font-weight: bold;
+        margin-top: 10px;
+        font-size: 16px;
+    }
+
+    /* ---------------- GRID DE APOSTAS MÚLTIPLAS ---------------- */
+    .multiplas-grid {
+        width: 95%;
+        max-width: 1200px;
+        margin: 0 auto 50px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 25px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .multipla-card {
+        background: rgba(30,30,30,0.9);
+        border: 2px solid rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 25px;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .multipla-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #00ff88, #ffcc00);
+    }
+
+    .multipla-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 25px rgba(0,255,136,0.3);
+        border-color: #00ff88;
+    }
+
+    .multipla-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .multipla-titulo {
+        font-size: 22px;
+        text-shadow: 0 0 8px #00ff88;
+    }
+
+    .multipla-tipo {
+        background: rgba(255, 204, 0, 0.2);
+        color: #ffcc00;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .multipla-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .multipla-odd {
+        text-align: center;
+    }
+
+    .odd-label {
+        color: #bbb;
+        font-size: 14px;
+    }
+
+    .odd-valor {
+        font-size: 24px;
+        font-weight: bold;
+        color: #ffcc00;
+        text-shadow: 0 0 10px #ffcc00;
+    }
+
+    .multipla-retorno {
+        text-align: center;
+    }
+
+    .retorno-label {
+        color: #bbb;
+        font-size: 14px;
+    }
+
+    .retorno-valor {
+        font-size: 18px;
+        font-weight: bold;
+        color: #00ff88;
+    }
+
+    .multipla-confianca {
+        text-align: center;
+    }
+
+    .confianca-label {
+        color: #bbb;
+        font-size: 14px;
+    }
+
+    .confianca-valor {
+        font-size: 16px;
+        font-weight: bold;
+        color: #ffcc00;
+    }
+
+    /* ---------------- EVENTOS DA MÚLTIPLA ---------------- */
+    .eventos-lista {
+        margin: 20px 0;
+    }
+
+    .evento-item {
+        background: rgba(255,255,255,0.05);
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        border-left: 3px solid #00ff88;
+    }
+
+    .evento-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .evento-jogo {
+        font-weight: bold;
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+
+    .evento-detalhes {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+    }
+
+    .evento-mercado {
+        color: #00ff88;
+    }
+
+    .evento-odd {
+        color: #ffcc00;
+        font-weight: bold;
+    }
+
+    /* ---------------- OBSERVAÇÃO DA IA ---------------- */
+    .observacao-ia {
+        background: rgba(0, 255, 136, 0.1);
+        border-left: 3px solid #00ff88;
+        padding: 12px 15px;
+        margin: 15px 0;
+        border-radius: 0 8px 8px 0;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .observacao-titulo {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #00ff88;
+    }
+
+    /* ---------------- BOTÃO DE APOSTA ---------------- */
+    .btn-aposta-grande {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #00ff88, #00d471);
+        color: black;
+        border: none;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+        text-align: center;
+        margin-top: 20px;
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+    }
+
+    .btn-aposta-grande:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.7);
+    }
+
+    /* ---------------- STATUS DO USUÁRIO ---------------- */
+    .user-status {
+        text-align: center;
+        margin-bottom: 30px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .plano-info {
+        display: inline-block;
+        background: rgba(0, 255, 136, 0.1);
+        padding: 8px 20px;
+        border-radius: 20px;
+        color: #00ff88;
+        font-size: 14px;
+        border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    /* ---------------- BOTÃO TOPO ---------------- */
+    .btn-topo {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #00ff88;
+        color: black;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ff88;
+        z-index: 100;
+        transition: 0.3s;
+        display: none;
+    }
+
+    .btn-topo:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 20px #00ff88;
+    }
+
+    /* ---------------- RESPONSIVO ---------------- */
+    @media (max-width: 768px) {
+        .multiplas-grid {
+            grid-template-columns: 1fr;
+        }
+        .multipla-info {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .titulo-multiplas { font-size: 28px; }
+        .multipla-header { flex-direction: column; gap: 10px; }
+        .btn-topo { bottom: 20px; right: 20px; }
+    }
+</style>
+</head>
+<body>
+
+<!-- =============== HEADER =============== -->
+<header>
+    <div class="logo">
+        <div class="bola-neon-mini"></div>
+        <h1>PALPITES IA</h1>
+    </div>
+    <button class="btn-voltar" onclick="window.location.href='painel.html'">
+        ⬅ Voltar ao Painel
+    </button>
+</header>
+
+<!-- =============== HERO SECTION =============== -->
+<div class="hero">
+    <h2 class="titulo-multiplas">Apostas Múltiplas</h2>
+    <p class="subinfo">Combinações de apostas selecionadas pela IA para maximizar seus ganhos com segurança.</p>
+    <div class="data-atual" id="dataAtual"></div>
+</div>
+
+<!-- =============== STATUS DO USUÁRIO =============== -->
+<div class="user-status">
+    <div class="plano-info" id="planoInfo">Plano Ativo: Premium</div>
+</div>
+
+<!-- =============== GRID DE APOSTAS MÚLTIPLAS =============== -->
+<div class="multiplas-grid" id="multiplasPalpites">
+    
+    <!-- MÚLTIPLA 1 -->
+    <div class="multipla-card">
+        <div class="multipla-header">
+            <div class="multipla-titulo">Múltipla de Segurança</div>
+            <div class="multipla-tipo">CONFIANÇA ALTA</div>
+        </div>
+        
+        <div class="multipla-info">
+            <div class="multipla-odd">
+                <div class="odd-label">Odd Total</div>
+                <div class="odd-valor">6.85</div>
+            </div>
+            <div class="multipla-retorno">
+                <div class="retorno-label">Retorno (R$10)</div>
+                <div class="retorno-valor">R$ 68,50</div>
+            </div>
+            <div class="multipla-confianca">
+                <div class="confianca-label">Confiança IA</div>
+                <div class="confianca-valor">78%</div>
+            </div>
+        </div>
+        
+        <div class="eventos-lista">
+            <div class="evento-item">
+                <div class="evento-jogo">Manchester City x Brighton</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Mais de 2.5 gols</span>
+                    <span class="evento-odd">1.85</span>
+                </div>
+            </div>
+            
+            <div class="evento-item">
+                <div class="evento-jogo">Inter de Milão x Roma</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Ambas as equipes marcam</span>
+                    <span class="evento-odd">1.90</span>
+                </div>
+            </div>
+            
+            <div class="evento-item">
+                <div class="evento-jogo">Bayern Munique x Stuttgart</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Vitória com Handicap -1.5</span>
+                    <span class="evento-odd">1.95</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observacao-ia">
+            <div class="observacao-titulo">Observação da IA:</div>
+            Combinação equilibrada com jogos de alta probabilidade. Todos os times apresentam consistência ofensiva e defensiva nos últimos jogos.
+        </div>
+        
+        <button class="btn-aposta-grande">Apostar nesta múltipla</button>
+        
+        <div class="aposta-footer">
+            <div class="horario">Atualizado há 25min</div>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA 2 -->
+    <div class="multipla-card">
+        <div class="multipla-header">
+            <div class="multipla-titulo">Múltipla de Alto Retorno</div>
+            <div class="multipla-tipo">RETORNO ELEVADO</div>
+        </div>
+        
+        <div class="multipla-info">
+            <div class="multipla-odd">
+                <div class="odd-label">Odd Total</div>
+                <div class="odd-valor">15.42</div>
+            </div>
+            <div class="multipla-retorno">
+                <div class="retorno-label">Retorno (R$10)</div>
+                <div class="retorno-valor">R$ 154,20</div>
+            </div>
+            <div class="multipla-confianca">
+                <div class="confianca-label">Confiança IA</div>
+                <div class="confianca-valor">65%</div>
+            </div>
+        </div>
+        
+        <div class="eventos-lista">
+            <div class="evento-item">
+                <div class="evento-jogo">Real Madrid x Cádiz</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Vitória com Handicap -2</span>
+                    <span class="evento-odd">2.10</span>
+                </div>
+            </div>
+            
+            <div class="evento-item">
+                <div class="evento-jogo">Liverpool x Burnley</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Mais de 3.5 gols</span>
+                    <span class="evento-odd">2.45</span>
+                </div>
+            </div>
+            
+            <div class="evento-item">
+                <div class="evento-jogo">PSG x Monaco</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Ambas marcam + Mais de 2.5</span>
+                    <span class="evento-odd">2.30</span>
+                </div>
+            </div>
+            
+            <div class="evento-item">
+                <div class="evento-jogo">Atlético Madrid x Sevilla</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Vitória do Atlético</span>
+                    <span class="evento-odd">1.65</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observacao-ia">
+            <div class="observacao-titulo">Observação da IA:</div>
+            Múltipla com odds elevadas mas com boa fundamentação estatística. Times em boa fase e confrontos com histórico de gols.
+        </div>
+        
+        <button class="btn-aposta-grande">Apostar nesta múltipla</button>
+        
+        <div class="aposta-footer">
+            <div class="horario">Atualizado há 40min</div>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA 3 -->
+    <div class="multipla-card">
+        <div class="multipla-header">
+            <div class="multipla-titulo">Múltipla Europeia</div>
+            <div class="multipla-tipo">CONFIANÇA MÉDIA</div>
+        </div>
+        
+        <div class="multipla-info">
+            <div class="multipla-odd">
+                <div class="odd-label">Odd Total</div>
+                <div class="odd-valor">9.25</div>
+            </div>
+            <div class="multipla-retorno">
+                <div class="retorno-label">Retorno (R$10)</div>
+                <div class="retorno-valor">R$ 92,50</div>
+            </div>
+            <div class="multipla-confianca">
+                <div class="confianca-label">Confiança IA</div>
+                <div class="confianca-valor">72%</div>
+            </div>
+        </div>
+        
+        <div class="eventos-lista">
+            <div class="evento-item">
+                <div class="evento-jogo">Barcelona x Valencia</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Vitória do Barcelona</span>
+                    <span class="evento-odd">1.45</span>
+                </div>
+            </div>
+            
+            <div class="evento-item">
+                <div class="evento-jogo">Borussia Dortmund x Leverkusen</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Ambas as equipes marcam</span>
+                    <span class="evento-odd">1.75</span>
+                </div>
+            </div>
+            
+            <div class="evento-item">
+                <div class="evento-jogo">Juventus x Napoli</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Menos de 3.5 gols</span>
+                    <span class="evento-odd">1.70</span>
+                </div>
+            </div>
+            
+            <div class="evento-item">
+                <div class="evento-jogo">Arsenal x Aston Villa</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Vitória do Arsenal</span>
+                    <span class="evento-odd">1.60</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observacao-ia">
+            <div class="observacao-titulo">Observação da IA:</div>
+            Seleção de jogos das principais ligas europeias com times consistentes. Apostas seguras com odds interessantes.
+        </div>
+        
+        <button class="btn-aposta-grande">Apostar nesta múltipla</button>
+        
+        <div class="aposta-footer">
+            <div class="horario">Atualizado há 1h</div>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA 4 -->
+    <div class="multipla-card">
+        <div class="multipla-header">
+            <div class="multipla-titulo">Múltipla Brasileira</div>
+            <div class="multipla-tipo">CONFIANÇA ALTA</div>
+        </div>
+        
+        <div class="multipla-info">
+            <div class="multipla-odd">
+                <div class="odd-label">Odd Total</div>
+                <div class="odd-valor">7.80</div>
+            </div>
+            <div class="multipla-retorno">
+                <div class="retorno-label">Retorno (R$10)</div>
+                <div class="retorno-valor">R$ 78,00</div>
+            </div>
+            <div class="multipla-confianca">
+                <div class="confianca-label">Confiança IA</div>
+                <div class="confianca-valor">76%</div>
+            </div>
+        </div>
+        
+        <div class="eventos-lista">
+            <div class="evento-item">
+                <div class="evento-jogo">Flamengo x Palmeiras</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Ambas as equipes marcam</span>
+                    <span class="evento-odd">2.15</span>
+                </div>
+            </div>
+            
+            <div class="evento-item">
+                <div class="evento-jogo">São Paulo x Corinthians</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Menos de 2.5 gols</span>
+                    <span class="evento-odd">1.80</span>
+                </div>
+            </div>
+            
+            <div class="evento-item">
+                <div class="evento-jogo">Grêmio x Internacional</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Mais de 1.5 gols</span>
+                    <span class="evento-odd">1.65</span>
+                </div>
+            </div>
+            
+            <div class="evento-item">
+                <div class="evento-jogo">Athletico x Fortaleza</div>
+                <div class="evento-detalhes">
+                    <span class="evento-mercado">Vitória do Athletico</span>
+                    <span class="evento-odd">1.75</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observacao-ia">
+            <div class="observacao-titulo">Observação da IA:</div>
+            Análise detalhada dos clássicos brasileiros com base no desempenho recente e estatísticas de confrontos diretos.
+        </div>
+        
+        <button class="btn-aposta-grande">Apostar nesta múltipla</button>
+        
+        <div class="aposta-footer">
+            <div class="horario">Atualizado há 1h 30min</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- BOTÃO VOLTAR AO TOPO -->
+<button class="btn-topo" id="btnTopo" title="Voltar ao topo">↑</button>
+
+<script>
+    // Atualizar data atual
+    const dataAtual = new Date();
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    document.getElementById('dataAtual').textContent = dataAtual.toLocaleDateString('pt-BR', options);
+    
+    // Simular verificação do plano do usuário
+    function verificarPlanoUsuario() {
+        // Aqui você integraria com o backend para verificar o plano real
+        const plano = localStorage.getItem('planoUsuario') || 'Premium';
+        document.getElementById('planoInfo').textContent = `Plano Ativo: ${plano}`;
+    }
+    
+    // Verificar plano ao carregar a página
+    verificarPlanoUsuario();
+    
+    // Botão voltar ao topo
+    const btnTopo = document.getElementById("btnTopo");
+    
+    window.onscroll = function() {
+        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+            btnTopo.style.display = "block";
+        } else {
+            btnTopo.style.display = "none";
+        }
+    };
+    
+    btnTopo.onclick = function() {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+    // Adicionar funcionalidade aos botões de aposta
+    document.querySelectorAll('.btn-aposta-grande').forEach(button => {
+        button.addEventListener('click', function() {
+            // Aqui você pode adicionar a lógica para redirecionar para as casas de apostas
+            // ou mostrar um modal com as opções
+            alert('Redirecionando para as casas de apostas...');
+        });
+    });
+</script>
+
+</body>
+</html>

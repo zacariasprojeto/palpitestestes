@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apostas Seguras • Palpites IA</title>
+
+<style>
+    body {
+        background: #000;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        color: white;
+        position: relative;
+        min-height: 100vh;
+    }
+    
+    /* ---------------- MOLDURA NEON AO REDOR DA PÁGINA ---------------- */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        border: 2px solid rgba(0, 255, 136, 0.15);
+        border-radius: 30px;
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.2),
+                    inset 0 0 30px rgba(0, 255, 136, 0.1);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    /* ---------------- HEADER ---------------- */
+    header {
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(10,10,10,0.95);
+        position: relative;
+        z-index: 2;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .bola-neon-mini {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: 3px solid rgba(0,255,136,0.3);
+        border-top-color: #00ff88;
+        animation: spin 2s linear infinite;
+        box-shadow: 0 0 15px #00ff88, 0 0 25px #ffcc00;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .logo h1 {
+        font-size: 28px;
+        font-weight: bold;
+        background: linear-gradient(#00ff88, #00d471);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px #00ff88;
+        letter-spacing: 1.5px;
+        margin: 0;
+    }
+
+    .btn-voltar {
+        background: transparent;
+        padding: 10px 20px;
+        border: 2px solid #00ff88;
+        border-radius: 10px;
+        cursor: pointer;
+        color: #00ff88;
+        font-weight: bold;
+        transition: .3s ease;
+    }
+
+    .btn-voltar:hover {
+        background: #00ff88;
+        color: black;
+    }
+
+    /* ---------------- HERO SECTION ---------------- */
+    .hero {
+        text-align: center;
+        padding: 40px 20px 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .titulo-seguras {
+        font-size: 36px;
+        margin-bottom: 15px;
+        text-shadow: 0 0 20px #00ff88;
+        position: relative;
+        display: inline-block;
+    }
+
+    .titulo-seguras::before {
+        content: '🛡️';
+        margin-right: 10px;
+    }
+
+    .subinfo {
+        color: #bbb;
+        font-size: 18px;
+        max-width: 600px;
+        margin: 0 auto 30px;
+        line-height: 1.5;
+    }
+
+    .data-atual {
+        color: #ffcc00;
+        font-weight: bold;
+        margin-top: 10px;
+        font-size: 16px;
+    }
+
+    /* ---------------- GRID DE APOSTAS SEGURAS ---------------- */
+    .apostas-grid {
+        width: 95%;
+        max-width: 1200px;
+        margin: 0 auto 50px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 25px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .aposta-card {
+        background: rgba(30,30,30,0.9);
+        border: 2px solid rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 25px;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .aposta-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #00ff88, #ffcc00);
+    }
+
+    .aposta-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 25px rgba(0,255,136,0.3);
+        border-color: #00ff88;
+    }
+
+    .aposta-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+
+    .aposta-titulo {
+        font-size: 22px;
+        margin-bottom: 8px;
+        text-shadow: 0 0 8px #00ff88;
+        flex: 1;
+    }
+
+    .aposta-confianca {
+        background: rgba(0, 255, 136, 0.2);
+        color: #00ff88;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        margin-left: 15px;
+        white-space: nowrap;
+    }
+
+    .aposta-meta {
+        color: #ccc;
+        margin-bottom: 15px;
+        font-size: 15px;
+        line-height: 1.4;
+    }
+
+    .aposta-detalhes {
+        background: rgba(255,255,255,0.05);
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+
+    .detalhe-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .detalhe-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .detalhe-label {
+        color: #bbb;
+    }
+
+    .detalhe-valor {
+        color: #00ff88;
+        font-weight: bold;
+    }
+
+    .probabilidade {
+        font-size: 16px;
+        font-weight: bold;
+        color: #ffcc00;
+        text-shadow: 0 0 10px #ffcc00;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .tag {
+        padding: 8px 16px;
+        background: #00ff88;
+        color: black;
+        border-radius: 10px;
+        display: inline-block;
+        font-weight: bold;
+        box-shadow: 0 0 10px #00ff88;
+    }
+
+    .aposta-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .horario {
+        color: #bbb;
+        font-size: 14px;
+    }
+
+    /* ---------------- ESTATÍSTICAS DETALHADAS ---------------- */
+    .estatisticas {
+        margin: 20px 0;
+        background: rgba(255,255,255,0.03);
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .estatisticas-titulo {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 12px;
+        color: #ffcc00;
+        text-align: center;
+    }
+
+    .estatisticas-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .time-estatisticas {
+        background: rgba(255,255,255,0.05);
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    .time-nome {
+        font-weight: bold;
+        margin-bottom: 8px;
+        text-align: center;
+        font-size: 14px;
+        color: #00ff88;
+    }
+
+    .estatistica-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+        font-size: 13px;
+    }
+
+    .estatistica-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .estatistica-label {
+        color: #bbb;
+    }
+
+    .estatistica-valor {
+        color: white;
+        font-weight: bold;
+    }
+
+    /* ---------------- OBSERVAÇÃO DA IA ---------------- */
+    .observacao-ia {
+        background: rgba(0, 255, 136, 0.1);
+        border-left: 3px solid #00ff88;
+        padding: 12px 15px;
+        margin: 15px 0;
+        border-radius: 0 8px 8px 0;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .observacao-titulo {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #00ff88;
+    }
+
+    /* ---------------- BOTÕES DE APOSTAS ---------------- */
+    .botoes-apostas {
+        display: flex;
+        gap: 10px;
+        margin: 15px 0;
+        flex-wrap: wrap;
+    }
+
+    .btn-aposta {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        text-align: center;
+        text-decoration: none;
+        font-size: 14px;
+        min-width: 120px;
+    }
+
+    .btn-aposta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        opacity: 0.9;
+    }
+
+    .bet365 {
+        background: #00a85d;
+        color: white;
+    }
+
+    .betano {
+        background: #ffcc00;
+        color: black;
+    }
+
+    .sportingbet {
+        background: #00b4ff;
+        color: white;
+    }
+
+    /* ---------------- STATUS DO USUÁRIO ---------------- */
+    .user-status {
+        text-align: center;
+        margin-bottom: 30px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .plano-info {
+        display: inline-block;
+        background: rgba(0, 255, 136, 0.1);
+        padding: 8px 20px;
+        border-radius: 20px;
+        color: #00ff88;
+        font-size: 14px;
+        border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    /* ---------------- INDICADOR DE SEGURANÇA ---------------- */
+    .indicador-seguranca {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 0;
+        gap: 10px;
+    }
+
+    .nivel-seguranca {
+        background: rgba(0, 255, 136, 0.2);
+        color: #00ff88;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    /* ---------------- BOTÃO TOPO ---------------- */
+    .btn-topo {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #00ff88;
+        color: black;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        cursor: pointer;
+        box-shadow: 0 0 15px #00ff88;
+        z-index: 100;
+        transition: 0.3s;
+        display: none;
+    }
+
+    .btn-topo:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 20px #00ff88;
+    }
+
+    /* ---------------- RESPONSIVO ---------------- */
+    @media (max-width: 768px) {
+        .apostas-grid {
+            grid-template-columns: 1fr;
+        }
+        .estatisticas-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .titulo-seguras { font-size: 28px; }
+        .aposta-header { flex-direction: column; }
+        .aposta-confianca { margin-left: 0; margin-top: 10px; }
+        .botoes-apostas { flex-direction: column; }
+        .btn-aposta { min-width: 100%; }
+        .btn-topo { bottom: 20px; right: 20px; }
+    }
+</style>
+</head>
+<body>
+
+<!-- =============== HEADER =============== -->
+<header>
+    <div class="logo">
+        <div class="bola-neon-mini"></div>
+        <h1>PALPITES IA</h1>
+    </div>
+    <button class="btn-voltar" onclick="window.location.href='painel.html'">
+        ⬅ Voltar ao Painel
+    </button>
+</header>
+
+<!-- =============== HERO SECTION =============== -->
+<div class="hero">
+    <h2 class="titulo-seguras">Apostas Seguras</h2>
+    <p class="subinfo">Palpites com alta probabilidade de acerto selecionados pela IA para investimentos mais conservadores.</p>
+    <div class="data-atual" id="dataAtual"></div>
+</div>
+
+<!-- =============== STATUS DO USUÁRIO =============== -->
+<div class="user-status">
+    <div class="plano-info" id="planoInfo">Plano Ativo: Premium</div>
+</div>
+
+<!-- =============== GRID DE APOSTAS SEGURAS =============== -->
+<div class="apostas-grid" id="apostasSeguras">
+    
+    <!-- APOSTA 1 -->
+    <div class="aposta-card">
+        <div class="aposta-header">
+            <div class="aposta-titulo">Manchester City x Brighton</div>
+            <div class="aposta-confianca">SEGURANÇA MÁXIMA</div>
+        </div>
+        <div class="aposta-meta">Premier League • Inglaterra • Hoje - 17:00</div>
+        
+        <div class="aposta-detalhes">
+            <div class="detalhe-item">
+                <span class="detalhe-label">Mercado:</span>
+                <span class="detalhe-valor">Vitória do Manchester City</span>
+            </div>
+            <div class="detalhe-item">
+                <span class="detalhe-label">Odd:</span>
+                <span class="detalhe-valor">1.35</span>
+            </div>
+        </div>
+        
+        <div class="probabilidade">Probabilidade IA: 92%</div>
+        <div class="indicador-seguranca">
+            <span class="nivel-seguranca">🛡️ Nível de Segurança: 9.2/10</span>
+        </div>
+        <span class="tag">🏠 Vitória em Casa</span>
+        
+        <div class="estatisticas">
+            <div class="estatisticas-titulo">Estatísticas dos Times</div>
+            <div class="estatisticas-grid">
+                <div class="time-estatisticas">
+                    <div class="time-nome">Manchester City</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Vitórias em casa:</span>
+                        <span class="estatistica-valor">85%</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols em casa:</span>
+                        <span class="estatistica-valor">2.8</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Invicto em casa:</span>
+                        <span class="estatistica-valor">12 jogos</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">5V-0E-0D</span>
+                    </div>
+                </div>
+                <div class="time-estatisticas">
+                    <div class="time-nome">Brighton</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Derrotas fora:</span>
+                        <span class="estatistica-valor">45%</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols fora:</span>
+                        <span class="estatistica-valor">1.1</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Contra os 5 primeiros:</span>
+                        <span class="estatistica-valor">1V-9D</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">2V-2E-1D</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observacao-ia">
+            <div class="observacao-titulo">Observação da IA:</div>
+            O Manchester City apresenta domínio absoluto em casa, com 100% de aproveitamento nos últimos 5 jogos. O Brighton tem histórico negativo contra times do topo da tabela.
+        </div>
+        
+        <div class="botoes-apostas">
+            <a href="https://www.bet365.com" target="_blank" class="btn-aposta bet365">Bet365</a>
+            <a href="https://www.betano.com" target="_blank" class="btn-aposta betano">Betano</a>
+            <a href="https://www.sportingbet.com" target="_blank" class="btn-aposta sportingbet">Sportingbet</a>
+        </div>
+        
+        <div class="aposta-footer">
+            <div class="horario">Atualizado há 25min</div>
+        </div>
+    </div>
+
+    <!-- APOSTA 2 -->
+    <div class="aposta-card">
+        <div class="aposta-header">
+            <div class="aposta-titulo">Bayern Munique x Stuttgart</div>
+            <div class="aposta-confianca">SEGURANÇA ALTA</div>
+        </div>
+        <div class="aposta-meta">Bundesliga • Alemanha • Hoje - 15:30</div>
+        
+        <div class="aposta-detalhes">
+            <div class="detalhe-item">
+                <span class="detalhe-label">Mercado:</span>
+                <span class="detalhe-valor">Vitória do Bayern Munique</span>
+            </div>
+            <div class="detalhe-item">
+                <span class="detalhe-label">Odd:</span>
+                <span class="detalhe-valor">1.40</span>
+            </div>
+        </div>
+        
+        <div class="probabilidade">Probabilidade IA: 89%</div>
+        <div class="indicador-seguranca">
+            <span class="nivel-seguranca">🛡️ Nível de Segurança: 8.9/10</span>
+        </div>
+        <span class="tag">🔥 Favorito Absoluto</span>
+        
+        <div class="estatisticas">
+            <div class="estatisticas-titulo">Estatísticas dos Times</div>
+            <div class="estatisticas-grid">
+                <div class="time-estatisticas">
+                    <div class="time-nome">Bayern Munique</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Vitórias em casa:</span>
+                        <span class="estatistica-valor">88%</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Invicto em casa:</span>
+                        <span class="estatistica-valor">15 jogos</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols em casa:</span>
+                        <span class="estatistica-valor">3.1</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 confrontos:</span>
+                        <span class="estatistica-valor">5V-0E-0D</span>
+                    </div>
+                </div>
+                <div class="time-estatisticas">
+                    <div class="time-nome">Stuttgart</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Derrotas fora:</span>
+                        <span class="estatistica-valor">50%</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Gols sofridos fora:</span>
+                        <span class="estatistica-valor">1.8 por jogo</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Contra o Bayern:</span>
+                        <span class="estatistica-valor">0V-8D</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">2V-1E-2D</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observacao-ia">
+            <div class="observacao-titulo">Observação da IA:</div>
+            O Bayern é praticamente imbatível em casa e tem domínio histórico absoluto sobre o Stuttgart. A equipe visitaira apresenta defesa frágil em jogos fora de casa.
+        </div>
+        
+        <div class="botoes-apostas">
+            <a href="https://www.bet365.com" target="_blank" class="btn-aposta bet365">Bet365</a>
+            <a href="https://www.betano.com" target="_blank" class="btn-aposta betano">Betano</a>
+            <a href="https://www.sportingbet.com" target="_blank" class="btn-aposta sportingbet">Sportingbet</a>
+        </div>
+        
+        <div class="aposta-footer">
+            <div class="horario">Atualizado há 40min</div>
+        </div>
+    </div>
+
+    <!-- APOSTA 3 -->
+    <div class="aposta-card">
+        <div class="aposta-header">
+            <div class="aposta-titulo">Real Madrid x Cádiz</div>
+            <div class="aposta-confianca">SEGURANÇA MÁXIMA</div>
+        </div>
+        <div class="aposta-meta">La Liga • Espanha • Hoje - 17:00</div>
+        
+        <div class="aposta-detalhes">
+            <div class="detalhe-item">
+                <span class="detalhe-label">Mercado:</span>
+                <span class="detalhe-valor">Vitória do Real Madrid</span>
+            </div>
+            <div class="detalhe-item">
+                <span class="detalhe-label">Odd:</span>
+                <span class="detalhe-valor">1.25</span>
+            </div>
+        </div>
+        
+        <div class="probabilidade">Probabilidade IA: 94%</div>
+        <div class="indicador-seguranca">
+            <span class="nivel-seguranca">🛡️ Nível de Segurança: 9.4/10</span>
+        </div>
+        <span class="tag">👑 Favoritismo Histórico</span>
+        
+        <div class="estatisticas">
+            <div class="estatisticas-titulo">Estatísticas dos Times</div>
+            <div class="estatisticas-grid">
+                <div class="time-estatisticas">
+                    <div class="time-nome">Real Madrid</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Vitórias em casa:</span>
+                        <span class="estatistica-valor">90%</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Invicto em casa:</span>
+                        <span class="estatistica-valor">18 jogos</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols em casa:</span>
+                        <span class="estatistica-valor">2.9</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 10 confrontos:</span>
+                        <span class="estatistica-valor">10V-0E-0D</span>
+                    </div>
+                </div>
+                <div class="time-estatisticas">
+                    <div class="time-nome">Cádiz</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Derrotas fora:</span>
+                        <span class="estatistica-valor">65%</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Gols marcados fora:</span>
+                        <span class="estatistica-valor">0.6 por jogo</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Contra os 3 primeiros:</span>
+                        <span class="estatistica-valor">0V-12D</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">0V-3E-2D</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observacao-ia">
+            <div class="observacao-titulo">Observação da IA:</div>
+            O Real Madrid tem domínio absoluto sobre o Cádiz, com 100% de aproveitamento nos últimos 10 confrontos. O Cádiz apresenta a pior campanha fora de casa da liga.
+        </div>
+        
+        <div class="botoes-apostas">
+            <a href="https://www.bet365.com" target="_blank" class="btn-aposta bet365">Bet365</a>
+            <a href="https://www.betano.com" target="_blank" class="btn-aposta betano">Betano</a>
+            <a href="https://www.sportingbet.com" target="_blank" class="btn-aposta sportingbet">Sportingbet</a>
+        </div>
+        
+        <div class="aposta-footer">
+            <div class="horario">Atualizado há 55min</div>
+        </div>
+    </div>
+
+    <!-- APOSTA 4 -->
+    <div class="aposta-card">
+        <div class="aposta-header">
+            <div class="aposta-titulo">Flamengo x Avaí</div>
+            <div class="aposta-confianca">SEGURANÇA ALTA</div>
+        </div>
+        <div class="aposta-meta">Brasileirão Série A • Brasil • Hoje - 21:30</div>
+        
+        <div class="aposta-detalhes">
+            <div class="detalhe-item">
+                <span class="detalhe-label">Mercado:</span>
+                <span class="detalhe-valor">Vitória do Flamengo</span>
+            </div>
+            <div class="detalhe-item">
+                <span class="detalhe-label">Odd:</span>
+                <span class="detalhe-valor">1.30</span>
+            </div>
+        </div>
+        
+        <div class="probabilidade">Probabilidade IA: 87%</div>
+        <div class="indicador-seguranca">
+            <span class="nivel-seguranca">🛡️ Nível de Segurança: 8.7/10</span>
+        </div>
+        <span class="tag">🏆 Disparidade Técnica</span>
+        
+        <div class="estatisticas">
+            <div class="estatisticas-titulo">Estatísticas dos Times</div>
+            <div class="estatisticas-grid">
+                <div class="time-estatisticas">
+                    <div class="time-nome">Flamengo</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Vitórias em casa:</span>
+                        <span class="estatistica-valor">80%</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Média de gols em casa:</span>
+                        <span class="estatistica-valor">2.4</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Contra os últimos 5:</span>
+                        <span class="estatistica-valor">5V-0E-0D</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">4V-1E-0D</span>
+                    </div>
+                </div>
+                <div class="time-estatisticas">
+                    <div class="time-nome">Avaí</div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Derrotas fora:</span>
+                        <span class="estatistica-valor">70%</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Gols sofridos fora:</span>
+                        <span class="estatistica-valor">2.1 por jogo</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Contra os 5 primeiros:</span>
+                        <span class="estatistica-valor">0V-8D</span>
+                    </div>
+                    <div class="estatistica-item">
+                        <span class="estatistica-label">Últimos 5 jogos:</span>
+                        <span class="estatistica-valor">1V-1E-3D</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="observacao-ia">
+            <div class="observacao-titulo">Observação da IA:</div>
+            O Flamengo apresenta força máxima em casa contra times do fundo da tabela. O Avaí tem a pior defesa fora de casa do campeonato e luta contra o rebaixamento.
+        </div>
+        
+        <div class="botoes-apostas">
+            <a href="https://www.bet365.com" target="_blank" class="btn-aposta bet365">Bet365</a>
+            <a href="https://www.betano.com" target="_blank" class="btn-aposta betano">Betano</a>
+            <a href="https://www.sportingbet.com" target="_blank" class="btn-aposta sportingbet">Sportingbet</a>
+        </div>
+        
+        <div class="aposta-footer">
+            <div class="horario">Atualizado há 1h 10min</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- BOTÃO VOLTAR AO TOPO -->
+<button class="btn-topo" id="btnTopo" title="Voltar ao topo">↑</button>
+
+<script>
+    // Atualizar data atual
+    const dataAtual = new Date();
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    document.getElementById('dataAtual').textContent = dataAtual.toLocaleDateString('pt-BR', options);
+    
+    // Simular verificação do plano do usuário
+    function verificarPlanoUsuario() {
+        // Aqui você integraria com o backend para verificar o plano real
+        const plano = localStorage.getItem('planoUsuario') || 'Premium';
+        document.getElementById('planoInfo').textContent = `Plano Ativo: ${plano}`;
+    }
+    
+    // Verificar plano ao carregar a página
+    verificarPlanoUsuario();
+    
+    // Botão voltar ao topo
+    const btnTopo = document.getElementById("btnTopo");
+    
+    window.onscroll = function() {
+        if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+            btnTopo.style.display = "block";
+        } else {
+            btnTopo.style.display = "none";
+        }
+    };
+    
+    btnTopo.onclick = function() {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+</script>
+
+</body>
+</html>

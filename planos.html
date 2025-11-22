@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planos • Palpites IA</title>
+
+<style>
+
+    body {
+        background: #000;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        color: white;
+        position: relative;
+    }
+    
+    /* ---------------- MOLDAURA NEON AO REDOR DA PÁGINA ---------------- */
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        border: 10px solid rgba(0, 255, 136, 0.15);
+        border-radius: 30px;
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.2),
+                    inset 0 0 30px rgba(0, 255, 136, 0.1);
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    /* ---------------- HEADER ---------------- */
+
+    header {
+        padding: 25px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(10,10,10,0.95);
+        position: relative;
+        z-index: 3;
+        border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+        box-shadow: 0 5px 25px rgba(0, 255, 136, 0.15);
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .bola-neon-mini {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: 3px solid rgba(0,255,136,0.3);
+        border-top-color: #00ff88;
+        animation: spin 2s linear infinite;
+        box-shadow: 0 0 15px #00ff88, 0 0 25px #ffcc00;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .logo h1 {
+        font-size: 32px;
+        font-weight: bold;
+        background: linear-gradient(#00ff88, #00d471);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px #00ff88;
+        letter-spacing: 1.5px;
+        margin: 0;
+    }
+
+    .btn-voltar {
+        background: rgba(0, 255, 136, 0.1);
+        padding: 12px 25px;
+        border: 2px solid #00ff88;
+        border-radius: 12px;
+        cursor: pointer;
+        color: #00ff88;
+        font-weight: bold;
+        transition: .3s ease;
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+    }
+
+    .btn-voltar:hover {
+        background: #00ff88;
+        color: black;
+        transform: translateY(-2px);
+        box-shadow: 0 0 25px #00ff88;
+    }
+
+    /* ---------------- TÍTULO ---------------- */
+
+    .titulo {
+        text-align: center;
+        font-size: 36px;
+        margin-top: 50px;
+        text-shadow: 0 0 20px #00ff88;
+        position: relative;
+        z-index: 2;
+    }
+
+    .subinfo {
+        text-align: center;
+        color: #bbb;
+        margin-bottom: 40px;
+        font-size: 18px;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* ---------------- PLANOS ---------------- */
+
+    .planos-container {
+        width: 95%;
+        max-width: 1200px;
+        margin: 0 auto 50px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .plano-card {
+        background: rgba(30,30,30,0.9);
+        border: 2px solid rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 25px;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .plano-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 25px rgba(0,255,136,0.3);
+    }
+
+    .plano-card.destaque {
+        border-color: #00ff88;
+        box-shadow: 0 0 25px rgba(0, 255, 136, 0.3);
+        transform: scale(1.05);
+    }
+
+    .plano-card.destaque:hover {
+        transform: scale(1.05) translateY(-5px);
+    }
+
+    .plano-tag {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #ffcc00;
+        color: #000;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 0 10px #ffcc00;
+        white-space: nowrap;
+    }
+
+    .plano-tag.melhor-custo {
+        font-size: 12px;
+        padding: 5px 12px;
+    }
+
+    .plano-header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .plano-titulo {
+        font-size: 22px;
+        margin-bottom: 5px;
+        text-shadow: 0 0 8px #00ff88;
+    }
+
+    .plano-duracao {
+        color: #bbb;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .preco-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin: 15px 0;
+    }
+
+    .preco {
+        font-size: 32px;
+        color: #ffcc00;
+        font-weight: bold;
+    }
+
+    .preco-antigo {
+        font-size: 18px;
+        color: #888;
+        text-decoration: line-through;
+    }
+
+    .economia {
+        background: rgba(255, 204, 0, 0.2);
+        color: #ffcc00;
+        padding: 3px 10px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .beneficios {
+        color: #ccc;
+        font-size: 15px;
+        margin-bottom: 25px;
+        line-height: 1.6;
+        flex-grow: 1;
+    }
+
+    .beneficios li {
+        margin-bottom: 8px;
+        list-style-type: none;
+        padding-left: 20px;
+        position: relative;
+    }
+
+    .beneficios li:before {
+        content: "✓";
+        color: #00ff88;
+        position: absolute;
+        left: 0;
+    }
+
+    .btn-assinar {
+        width: 100%;
+        padding: 15px;
+        background: #00ff88;
+        color: black;
+        font-size: 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        border: none;
+        box-shadow: 0 0 15px #00ff88;
+        transition: .3s;
+        margin-top: auto;
+    }
+
+    .btn-assinar:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 20px #00ff88;
+    }
+
+    .garantia {
+        text-align: center;
+        color: #888;
+        font-size: 14px;
+        margin-top: 30px;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* ---------------- MODAL QR CODE ---------------- */
+
+    .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.85);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: #111;
+        border: 2px solid #00ff88;
+        border-radius: 15px;
+        padding: 30px;
+        width: 90%;
+        max-width: 420px;
+        text-align: center;
+        box-shadow: 0 0 25px #00ff88;
+        position: relative;
+        z-index: 1001;
+    }
+
+    .modal h2 {
+        margin-bottom: 15px;
+        text-shadow: 0 0 10px #00ff88;
+    }
+
+    #qrcode {
+        background: white;
+        padding: 15px;
+        border-radius: 15px;
+        margin: 20px auto;
+        width: 250px;
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-fechar {
+        margin-top: 15px;
+        background: transparent;
+        border: 2px solid #00ff88;
+        padding: 10px 20px;
+        border-radius: 9px;
+        color: #00ff88;
+        font-weight: bold;
+        cursor: pointer;
+        transition: .3s;
+    }
+
+    .btn-fechar:hover {
+        background: #00ff88;
+        color: black;
+    }
+
+</style>
+
+</head>
+<body>
+
+<!-- =============== HEADER =============== -->
+
+<header>
+    <div class="logo">
+        <div class="bola-neon-mini"></div>
+        <h1>PALPITES IA</h1>
+    </div>
+
+    <button class="btn-voltar" onclick="window.location.href='bloqueado.html'">
+        ⬅ Voltar
+    </button>
+</header>
+
+<!-- =============== TÍTULO -=============== -->
+
+<h2 class="titulo">Escolha um Plano Premium</h2>
+<p class="subinfo">Liberte os 3 palpites mais fortes do dia e tenha acesso total ao sistema.</p>
+
+<!-- =============== PLANOS =============== -->
+
+<div class="planos-container">
+
+    <!-- PLANO MENSAL -->
+    <div class="plano-card">
+        <div class="plano-tag">MAIS POPULAR</div>
+        <div class="plano-header">
+            <div class="plano-titulo">Mensal</div>
+            <div class="plano-duracao">30 dias de acesso</div>
+        </div>
+        
+        <div class="preco-container">
+            <div class="preco">R$ 49,90</div>
+        </div>
+        
+        <div class="beneficios">
+            <li>Top 3 do dia</li>
+            <li>Apostas individuais</li>
+            <li>Apostas múltiplas</li>
+            <li>IA completa</li>
+        </div>
+
+        <button class="btn-assinar" onclick="abrirPIX('mensal')">Assinar via PIX</button>
+    </div>
+
+    <!-- PLANO TRIMESTRAL -->
+    <div class="plano-card destaque">
+        <div class="plano-tag">13% OFF</div>
+        <div class="plano-header">
+            <div class="plano-titulo">Trimestral</div>
+            <div class="plano-duracao">90 dias de acesso</div>
+        </div>
+        
+        <div class="preco-container">
+            <div class="preco-antigo">R$ 149,70</div>
+            <div class="preco">R$ 129,90</div>
+        </div>
+        <div class="economia">Economia de 13%</div>
+        
+        <div class="beneficios">
+            <li>Top 3 do dia</li>
+            <li>IA completa</li>
+            <li>Suporte prioritário</li>
+            <li>Análises exclusivas</li>
+        </div>
+
+        <button class="btn-assinar" onclick="abrirPIX('trimestral')">Assinar via PIX</button>
+    </div>
+
+    <!-- PLANO SEMESTRAL -->
+    <div class="plano-card">
+        <div class="plano-tag melhor-custo">MELHOR CUSTO-BENEFÍCIO</div>
+        <div class="plano-header">
+            <div class="plano-titulo">Semestral</div>
+            <div class="plano-duracao">180 dias de acesso</div>
+        </div>
+        
+        <div class="preco-container">
+            <div class="preco-antigo">R$ 299,40</div>
+            <div class="preco">R$ 219,90</div>
+        </div>
+        <div class="economia">Economia de 27%</div>
+        
+        <div class="beneficios">
+            <li>Acesso total</li>
+            <li>Suporte prioritário</li>
+            <li>Análises exclusivas</li>
+            <li>Relatórios avançados</li>
+        </div>
+
+        <button class="btn-assinar" onclick="abrirPIX('semestral')">Assinar via PIX</button>
+    </div>
+
+</div>
+
+<div class="garantia">
+    Pagamento 100% seguro. Acesso liberado imediatamente após confirmação.
+</div>
+
+<!-- =============== MODAL PIX =============== -->
+
+<div class="modal" id="modalPIX">
+    <div class="modal-content">
+        <h2>Pagamento via PIX</h2>
+        <p style="color:#bbb">Escaneie o QR Code abaixo para finalizar o pagamento.</p>
+
+        <div id="qrcode">
+            <!-- QR Code será inserido aqui pelo JavaScript -->
+        </div>
+
+        <button class="btn-fechar" onclick="fecharPIX()">Fechar</button>
+    </div>
+</div>
+
+
+<script>
+
+function abrirPIX(plano) {
+    document.getElementById("modalPIX").style.display = "flex";
+    
+    const qrCodeDiv = document.getElementById("qrcode");
+    
+    // Gera apenas o QR Code sem texto
+    qrCodeDiv.innerHTML = `
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=PALPITESIA-${plano.toUpperCase()}-${Date.now()}"
+             width="250" height="250" alt="QR Code PIX" />
+    `;
+}
+
+function fecharPIX() {
+    document.getElementById("modalPIX").style.display = "none";
+}
+
+// Fechar modal ao clicar fora
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('modalPIX');
+    if (event.target === modal) {
+        fecharPIX();
+    }
+});
+
+</script>
+
+</body>
+</html>

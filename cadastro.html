@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro • Palpites IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #000;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Moldura verde como nas outras páginas */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 2px solid rgba(0, 255, 136, 0.15);
+            border-radius: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2),
+                        inset 0 0 30px rgba(0, 255, 136, 0.1);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            gap: 30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .side-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .side-panel.left {
+            align-items: flex-end;
+            text-align: right;
+            padding-right: 20px;
+        }
+
+        .side-panel.right {
+            align-items: flex-start;
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(#00ff88, #00d471);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px #00ff88;
+        }
+
+        .panel-title {
+            color: #00ff88;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .features {
+            margin-bottom: 30px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .left .feature {
+            justify-content: flex-end;
+        }
+
+        .right .feature {
+            justify-content: flex-start;
+        }
+
+        .feature-icon {
+            color: #00ff88;
+            margin: 0 10px;
+            font-size: 16px;
+        }
+
+        .testimonial {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .testimonial-author {
+            font-size: 13px;
+            color: #00ff88;
+            font-weight: 500;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .form-section {
+            width: 400px;
+            flex-shrink: 0;
+        }
+
+        .card {
+            background: rgba(30,30,30,0.95);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card-header h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+            color: #00ff88;
+        }
+
+        .card-header p {
+            color: #bbb;
+            font-size: 13px;
+        }
+
+        .trial-badge {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .trial-badge strong {
+            color: #00ff88;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.2);
+        }
+
+        .password-strength {
+            margin-top: 5px;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .password-weak .password-strength-bar {
+            width: 30%;
+            background: #ff4757;
+        }
+
+        .password-medium .password-strength-bar {
+            width: 60%;
+            background: #ffa502;
+        }
+
+        .password-strong .password-strength-bar {
+            width: 100%;
+            background: #00ff88;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #00ff88, #00d471);
+            color: black;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .verification-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .verification-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .verification-option:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        .verification-option.selected {
+            background: rgba(0, 255, 136, 0.15);
+            border-color: #00ff88;
+        }
+
+        .option-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .code-inputs {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+
+        .code-input {
+            width: 40px;
+            height: 45px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.2);
+        }
+
+        .resend-code {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #bbb;
+        }
+
+        .resend-code a {
+            color: #00ff88;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #bbb;
+        }
+
+        .login-link a {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .error-message {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 15px;
+            color: #ff6b81;
+            font-size: 13px;
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 15px;
+            color: #00ff88;
+            font-size: 13px;
+            display: none;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 8px;
+        }
+
+        .step {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            color: #bbb;
+            font-weight: bold;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .step.active {
+            background: #00ff88;
+            color: black;
+        }
+
+        .step.completed {
+            background: rgba(0, 255, 136, 0.3);
+            color: #00ff88;
+        }
+
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 15px;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-50%);
+        }
+
+        .step:last-child::after {
+            display: none;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        .compact-info {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .side-panel {
+                width: 100%;
+                max-width: 600px;
+                align-items: center !important;
+                text-align: center !important;
+                padding: 0 !important;
+            }
+            
+            .side-panel.left, .side-panel.right {
+                order: 2;
+            }
+            
+            .form-section {
+                order: 1;
+            }
+            
+            .feature {
+                justify-content: center !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-section {
+                width: 100%;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .code-input {
+                width: 35px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Painel Esquerdo -->
+        <div class="side-panel left">
+            <div class="logo">
+                <h1>PALPITES IA</h1>
+            </div>
+            
+            <div class="panel-title">🎯 Por que escolher nossa IA?</div>
+            
+            <div class="features">
+                <div class="feature">
+                    <span>Análise de dados em tempo real</span>
+                    <span class="feature-icon">⚡</span>
+                </div>
+                <div class="feature">
+                    <span>Algoritmos de machine learning</span>
+                    <span class="feature-icon">🧠</span>
+                </div>
+                <div class="feature">
+                    <span>Histórico de 85% de acertos</span>
+                    <span class="feature-icon">📈</span>
+                </div>
+                <div class="feature">
+                    <span>Atualizações constantes</span>
+                    <span class="feature-icon">🔄</span>
+                </div>
+            </div>
+            
+            <div class="panel-title">💬 O que dizem nossos usuários</div>
+            
+            <div class="testimonial">
+                <div class="testimonial-text">
+                    "Com a IA, minha taxa de acerto aumentou 40%. Os palpites são muito precisos!"
+                </div>
+                <div class="testimonial-author">- Carlos Silva, Apostador</div>
+            </div>
+            
+            <div class="testimonial">
+                <div class="testimonial-text">
+                    "Finalmente uma ferramenta que entrega resultados. O trial de 30 dias foi decisivo."
+                </div>
+                <div class="testimonial-author">- Ana Rodrigues, Investidora</div>
+            </div>
+        </div>
+        
+        <!-- Formulário Central -->
+        <div class="form-section">
+            <div class="card">
+                <!-- Indicador de Passos -->
+                <div class="step-indicator">
+                    <div class="step active">1</div>
+                    <div class="step">2</div>
+                    <div class="step">3</div>
+                </div>
+                
+                <!-- Mensagens -->
+                <div class="error-message" id="errorMessage"></div>
+                <div class="success-message" id="successMessage"></div>
+                
+                <!-- Passo 1: Cadastro -->
+                <div class="form-step active" id="step1">
+                    <div class="card-header">
+                        <h2>Criar Conta</h2>
+                        <p>Preencha seus dados para começar</p>
+                    </div>
+                    
+                    <div class="trial-badge">
+                        <strong>🎁 30 DIAS GRÁTIS</strong> - Acesso completo
+                    </div>
+                    
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label for="fullName">Nome Completo</label>
+                            <input type="text" id="fullName" class="form-control" placeholder="Seu nome completo" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cpf">CPF</label>
+                            <input type="text" id="cpf" class="form-control" placeholder="000.000.000-00" maxlength="14" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Celular</label>
+                            <input type="tel" id="phone" class="form-control" placeholder="(11) 99999-9999" maxlength="15" required>
+                            <div class="compact-info">Com DDD</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" class="form-control" placeholder="seu@email.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">Senha</label>
+                            <input type="password" id="password" class="form-control" placeholder="Crie uma senha segura" required>
+                            <div class="password-strength" id="passwordStrength">
+                                <div class="password-strength-bar"></div>
+                            </div>
+                            <div class="compact-info">Mínimo 8 caracteres, com letras maiúsculas, minúsculas, números e símbolos</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirmar Senha</label>
+                            <input type="password" id="confirmPassword" class="form-control" placeholder="Digite novamente" required>
+                        </div>
+                        
+                        <button type="submit" class="btn" id="registerBtn">Continuar</button>
+                    </form>
+                    
+                    <div class="login-link">
+                        Já tem conta? <a href="login.html">Fazer Login</a>
+                    </div>
+                </div>
+                
+                <!-- Passo 2: Verificação -->
+                <div class="form-step" id="step2">
+                    <div class="card-header">
+                        <h2>Verificar Conta</h2>
+                        <p>Escolha como receber o código</p>
+                    </div>
+                    
+                    <div class="verification-options">
+                        <div class="verification-option" data-method="email">
+                            <span class="option-icon">📧</span>
+                            E-mail
+                        </div>
+                        
+                        <div class="verification-option" data-method="whatsapp">
+                            <span class="option-icon">💬</span>
+                            WhatsApp
+                        </div>
+                        
+                        <div class="verification-option" data-method="sms">
+                            <span class="option-icon">📱</span>
+                            SMS
+                        </div>
+                    </div>
+                    
+                    <button class="btn" id="sendCodeBtn" disabled>Enviar Código</button>
+                    
+                    <div class="login-link">
+                        <a href="#" id="backToStep1">← Voltar</a>
+                    </div>
+                </div>
+                
+                <!-- Passo 3: Código -->
+                <div class="form-step" id="step3">
+                    <div class="card-header">
+                        <h2>Código de Verificação</h2>
+                        <p id="verificationMessage">Insira o código de 6 dígitos</p>
+                    </div>
+                    
+                    <div class="code-inputs">
+                        <input type="text" class="code-input" maxlength="1" data-index="0">
+                        <input type="text" class="code-input" maxlength="1" data-index="1">
+                        <input type="text" class="code-input" maxlength="1" data-index="2">
+                        <input type="text" class="code-input" maxlength="1" data-index="3">
+                        <input type="text" class="code-input" maxlength="1" data-index="4">
+                        <input type="text" class="code-input" maxlength="1" data-index="5">
+                    </div>
+                    
+                    <button class="btn" id="verifyCodeBtn" disabled>Verificar</button>
+                    
+                    <div class="resend-code">
+                        Não recebeu? <a href="#" id="resendCode">Reenviar código</a>
+                    </div>
+                    
+                    <div class="login-link">
+                        <a href="#" id="backToStep2">← Voltar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Painel Direito -->
+        <div class="side-panel right">
+            <div class="panel-title">🚀 Vantagens Exclusivas</div>
+            
+            <div class="features">
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span>Top 3 palpites do dia</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span>Análises detalhadas com estatísticas</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span>Apostas múltiplas selecionadas</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span>Palpites de alta segurança</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span>Suporte especializado</span>
+                </div>
+            </div>
+            
+            <div class="panel-title">📊 Nossos Números</div>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value">85%</div>
+                    <div class="stat-label">Taxa de Acerto</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">2.5K+</div>
+                    <div class="stat-label">Usuários Ativos</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">15K+</div>
+                    <div class="stat-label">Palpites Gerados</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">94%</div>
+                    <div class="stat-label">Satisfação</div>
+                </div>
+            </div>
+            
+            <div class="panel-title" style="margin-top: 30px;">⏰ Oferta por Tempo Limitado</div>
+            
+            <div class="trial-badge" style="text-align: left; margin-top: 10px;">
+                <strong>Últimos dias</strong> para garantir 30 dias gratuitos com acesso completo a todos os recursos premium!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos DOM
+        const steps = document.querySelectorAll('.step');
+        const formSteps = document.querySelectorAll('.form-step');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        
+        // Formulário
+        const registerForm = document.getElementById('registerForm');
+        const fullName = document.getElementById('fullName');
+        const cpf = document.getElementById('cpf');
+        const phone = document.getElementById('phone');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const registerBtn = document.getElementById('registerBtn');
+        
+        // Verificação
+        const verificationOptions = document.querySelectorAll('.verification-option');
+        const sendCodeBtn = document.getElementById('sendCodeBtn');
+        
+        // Código
+        const codeInputs = document.querySelectorAll('.code-input');
+        const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+        const verificationMessage = document.getElementById('verificationMessage');
+        const resendCode = document.getElementById('resendCode');
+        
+        // Navegação
+        const backToStep1 = document.getElementById('backToStep1');
+        const backToStep2 = document.getElementById('backToStep2');
+        
+        // Dados
+        let userData = {};
+        let selectedVerificationMethod = '';
+        let verificationCode = '';
+        
+        // Máscaras
+        function applyCPFMask(input) {
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length <= 11) {
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                }
+                e.target.value = value;
+            });
+        }
+        
+        function applyPhoneMask(input) {
+            input.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length <= 11) {
+                    value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                    value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                }
+                e.target.value = value;
+            });
+        }
+        
+        // Aplicar máscaras
+        applyCPFMask(cpf);
+        applyPhoneMask(phone);
+        
+        // Validação de senha
+        function checkPasswordStrength(pwd) {
+            const requirements = {
+                length: pwd.length >= 8,
+                upper: /[A-Z]/.test(pwd),
+                lower: /[a-z]/.test(pwd),
+                number: /\d/.test(pwd),
+                special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)
+            };
+            
+            const strengthBar = document.querySelector('.password-strength-bar');
+            const strengthContainer = document.getElementById('passwordStrength');
+            
+            let strength = 0;
+            Object.values(requirements).forEach(req => {
+                if (req) strength++;
+            });
+            
+            strengthContainer.className = 'password-strength';
+            if (strength <= 2) {
+                strengthContainer.classList.add('password-weak');
+            } else if (strength <= 4) {
+                strengthContainer.classList.add('password-medium');
+            } else {
+                strengthContainer.classList.add('password-strong');
+            }
+            
+            return requirements;
+        }
+        
+        password.addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+        
+        // Validação de formulário
+        function validateForm() {
+            const passwordReq = checkPasswordStrength(password.value);
+            const allRequirementsMet = Object.values(passwordReq).every(req => req);
+            const passwordsMatch = password.value === confirmPassword.value;
+            
+            registerBtn.disabled = !(
+                fullName.value.trim() !== '' &&
+                cpf.value.replace(/\D/g, '').length === 11 &&
+                phone.value.replace(/\D/g, '').length === 11 &&
+                email.value.includes('@') &&
+                allRequirementsMet &&
+                passwordsMatch
+            );
+            
+            if (password.value !== '' && confirmPassword.value !== '' && !passwordsMatch) {
+                showError('As senhas não coincidem');
+            } else {
+                hideError();
+            }
+        }
+        
+        // Ouvintes de entrada
+        [fullName, cpf, phone, email, password, confirmPassword].forEach(input => {
+            input.addEventListener('input', validateForm);
+        });
+        
+        // Mensagens
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+        
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+        
+        // Navegação entre passos
+        function goToStep(stepNumber) {
+            steps.forEach((step, index) => {
+                if (index < stepNumber - 1) {
+                    step.classList.add('completed');
+                    step.classList.remove('active');
+                } else if (index === stepNumber - 1) {
+                    step.classList.add('active');
+                    step.classList.remove('completed');
+                } else {
+                    step.classList.remove('active', 'completed');
+                }
+            });
+            
+            formSteps.forEach((step, index) => {
+                step.classList.toggle('active', index === stepNumber - 1);
+            });
+            
+            hideMessages();
+        }
+        
+        // Submissão do formulário
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const cleanCPF = cpf.value.replace(/\D/g, '');
+            const cleanPhone = phone.value.replace(/\D/g, '');
+            
+            if (cleanCPF.length !== 11) {
+                showError('CPF inválido');
+                return;
+            }
+            
+            if (cleanPhone.length !== 11) {
+                showError('Número de celular inválido');
+                return;
+            }
+            
+            userData = {
+                fullName: fullName.value.trim(),
+                cpf: cleanCPF,
+                phone: cleanPhone,
+                email: email.value.trim(),
+                password: password.value
+            };
+            
+            goToStep(2);
+        });
+        
+        // Seleção do método de verificação
+        verificationOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                verificationOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedVerificationMethod = this.getAttribute('data-method');
+                sendCodeBtn.disabled = false;
+            });
+        });
+        
+        // Enviar código
+        sendCodeBtn.addEventListener('click', function() {
+            if (!selectedVerificationMethod) {
+                showError('Selecione um método de verificação');
+                return;
+            }
+            
+            verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            console.log(`Código: ${verificationCode}`);
+            
+            let methodText = '';
+            switch(selectedVerificationMethod) {
+                case 'email': methodText = `e-mail ${userData.email}`; break;
+                case 'whatsapp':
+                case 'sms': methodText = `celular`; break;
+            }
+            
+            verificationMessage.textContent = `Insira o código enviado para seu ${methodText}`;
+            goToStep(3);
+        });
+        
+        // Navegação de código
+        codeInputs.forEach((input, index) => {
+            input.addEventListener('input', function() {
+                if (this.value.length === 1 && index < codeInputs.length - 1) {
+                    codeInputs[index + 1].focus();
+                }
+                
+                const allFilled = Array.from(codeInputs).every(input => input.value.length === 1);
+                verifyCodeBtn.disabled = !allFilled;
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    codeInputs[index - 1].focus();
+                }
+            });
+        });
+        
+        // Verificar código
+        verifyCodeBtn.addEventListener('click', function() {
+            const enteredCode = Array.from(codeInputs).map(input => input.value).join('');
+            
+            if (enteredCode === verificationCode) {
+                showSuccess('Conta verificada! Redirecionando...');
+                setTimeout(() => {
+                    window.location.href = 'painel.html';
+                }, 1500);
+            } else {
+                showError('Código inválido');
+                codeInputs.forEach(input => input.value = '');
+                codeInputs[0].focus();
+                verifyCodeBtn.disabled = true;
+            }
+        });
+        
+        // Reenviar código
+        resendCode.addEventListener('click', function(e) {
+            e.preventDefault();
+            verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            console.log(`Novo código: ${verificationCode}`);
+            showSuccess('Código reenviado!');
+            codeInputs.forEach(input => input.value = '');
+            codeInputs[0].focus();
+            verifyCodeBtn.disabled = true;
+        });
+        
+        // Navegação para trás
+        backToStep1.addEventListener('click', function(e) {
+            e.preventDefault();
+            goToStep(1);
+        });
+        
+        backToStep2.addEventListener('click', function(e) {
+            e.preventDefault();
+            goToStep(2);
+        });
+        
+        // Inicialização
+        validateForm();
+    </script>
+</body>
+</html>
